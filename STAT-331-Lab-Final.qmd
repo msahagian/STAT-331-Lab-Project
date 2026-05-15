@@ -36,6 +36,15 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 # Global data: https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image
 ```
 
+### Packages
+
+```{r}
+#| label: packages
+
+library(tidyverse)
+#library(knitr) add a gt kableextra type beat
+```
+
 ### Data Cleaning
 
 ```{r}
