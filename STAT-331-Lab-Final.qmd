@@ -35,3 +35,27 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 # Spotify data: https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download
 # Global data: https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image
 ```
+
+### Ideas
+
+Pick: Night Changes - OneDirection
+
+Lubridate time zone to figure out they're from the UK (ex it's this time for the artist)
+
+Fix the track_name/merge/get ride of playlist info
+
+Don't join apply music country
+
+1\) Data cleaning stuff (which rows to save/not save)(how many rows and cols)
+
+2\) Clues
+
+3\) GGPlot most popular genre, factor reorder by genre (Pop)
+
+4\) Energy level: medium high danceability (.672) and medium energy (0.52) leaked by justin bieber
+
+6\) song duration
+
+5\) data joins
+
+6\) Country of origin/when track came out/release date - with date
