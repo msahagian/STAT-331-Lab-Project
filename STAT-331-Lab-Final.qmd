@@ -38,6 +38,13 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 
 ### Data Cleaning
 
+```{r}
+Which lines to keep from each datasets
+apple:
+global:artist_name and country
+spotify: 
+```
+
 ### Ideas
 
 Pick: Night Changes - OneDirection
@@ -60,4 +67,4 @@ Don't join apply music country
 
 5\) data joins
 
-6\) Country of origin/when track came out/release date - with lubridate
+6\) Country of origin/when track came out/release date - with date
