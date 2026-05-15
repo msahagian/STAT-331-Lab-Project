@@ -39,10 +39,13 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 ### Data Cleaning
 
 ```{r}
-Which lines to keep from each datasets
-apple:
+apple: artist name, releasedate, trackname, primarygenre, tracktimemillis
+rename things in apple (remove: anything with Censored, explicitness, any price)
+
 global:artist_name and country
-spotify: 
+
+spotify: track_artist, energy, tempo, danceibility, track album release date, track popularity, acoustiness
+(playlist genre with primary genre?)(remove: anything with id, anything with playlist)
 ```
 
 ### Ideas
@@ -63,7 +66,7 @@ Don't join apply music country
 
 4\) Energy level: medium high danceability (.672) and medium energy (0.52) leaked by justin bieber
 
-6\) song duration
+6\) song duration - tracktimemillis
 
 5\) data joins
 
