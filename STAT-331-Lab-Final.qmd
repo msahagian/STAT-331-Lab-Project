@@ -3,11 +3,12 @@ title: "STAT-331-Final-Project"
 date: now
 author: "Mia Sahagian, Suhani Kashyap, Hanna Karam"
 format: 
-  HTML:
+  html:
     embed-resources: true
+    code-tools: true
+    toc: true
 editor: source
 execute: 
-  error: true
   echo: true
   message: false
   warning: false
