@@ -25,4 +25,9 @@ global_music <- read.csv("./Global Music Artists.csv")
 apple_music <- read.csv("./apple_music_dataset.csv")
 
 spotify_music <- read.csv("./high_popularity_spotify_data.csv")
+
+#Find more info on the data here: 
+# Apple data: https://www.kaggle.com/datasets/kanchana1990/apple-music-dataset-10000-tracks-uncovered
+# Spotify data: https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download
+# Global data: https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image
 ```
