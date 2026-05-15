@@ -14,7 +14,7 @@ execute:
   warning: false
 ---
 
-## Quarto
+# Lab Title
 
 ### Import Data
 
