@@ -16,7 +16,9 @@ execute:
 
 # PULL commit PUSH
 
-# Lab Title
+# Mystery Concert
+
+**Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a music fanatic journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
 
 ### Import Data
 
