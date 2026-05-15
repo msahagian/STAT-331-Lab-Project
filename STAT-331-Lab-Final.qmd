@@ -1,7 +1,16 @@
 ---
 title: "STAT-331-Final-Project"
-format: html
-editor: visual
+date: now
+author: "Mia Sahagian, Suhani Kashyap, Hanna Karam"
+format: 
+  pdf:
+    embed-resources: true
+editor: source
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
 ---
 
 ## Quarto
