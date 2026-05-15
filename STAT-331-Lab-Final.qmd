@@ -15,3 +15,14 @@ execute:
 ---
 
 ## Quarto
+
+### Import Data
+
+```{r}
+
+global_music <- read.csv("./Global Music Artists.csv")
+
+apple_music <- read.csv("./apple_music_dataset.csv")
+
+spotify_music <- read.csv("./high_popularity_spotify_data.csv")
+```
