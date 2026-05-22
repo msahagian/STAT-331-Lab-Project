@@ -20,7 +20,7 @@ execute:
 
 **Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a music fanatic journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
 
-### Data Dictionary & Import
+## Data Dictionary & Import
 
 #### Global Music:
 
@@ -49,7 +49,7 @@ apple_music <- read.csv("./apple_music_dataset.csv")
 spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 ```
 
-### Packages
+## Packages
 
 ```{r}
 #| label: packages
@@ -58,7 +58,7 @@ library(tidyverse)
 #library(knitr) add a gt kableextra type beat
 ```
 
-### Data Cleaning
+## Data Cleaning
 
 ```{r}
 apple: artist name, releasedate, trackname, primarygenre, tracktimemillis
@@ -68,6 +68,34 @@ global:artist_name and country
 
 spotify: track_artist, energy, tempo, danceibility, track album release date, track popularity, acoustiness
 (playlist genre with primary genre?)(remove: anything with id, anything with playlist)
+```
+
+### Clean the Apple Music Data
+
+Keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price.
+
+```{r}
+apple_clean <- apple_music |>
+ clean_names() |>
+ select(
+   artist_name = artistName,
+   track_name = trackName,
+   primary_genre_name = primaryGenreName,
+   release_date = releaseDate,
+   track_time_millis = trackTimeMillis) |>
+ mutate(
+   release_date = ymd_hms(release_date),
+   release_year = year(release_date),
+   track_duration_min = track_time_millis / 60000
+ )
+```
+
+### Clean the Spotify Music Data
+
+Keep only variables related to artist identity, popularity, release date, and audio features.
+
+```{r}
+
 ```
 
 ### Ideas
