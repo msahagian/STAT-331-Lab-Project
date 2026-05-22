@@ -92,9 +92,26 @@ apple_clean <- apple_music |>
 
 ### Clean the Spotify Music Data
 
-Keep only variables related to artist identity, popularity, release date, and audio features.
+Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
 
 ```{r}
+spotify_clean <- spotify_music |>
+ clean_names() |>
+ select(
+   track_album_name,
+   track_artist,
+   track_popularity,
+   track_album_name,
+   track_album_release_date,
+   playlist_genre,
+   danceability,
+   energy,
+   tempo,
+   acousticness
+ ) |>
+ mutate(
+   track_album_release_date = ymd(track_album_release_date),
+   release_year = year(track_album_release_date))
 
 ```
 
