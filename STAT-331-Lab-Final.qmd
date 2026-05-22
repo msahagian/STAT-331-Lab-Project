@@ -72,7 +72,7 @@ spotify: track_artist, energy, tempo, danceibility, track album release date, tr
 
 ### Clean the Apple Music Data
 
-Keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price. Make sure release date is in year month day, hours min second format, release year is extracted in year format, and track time is in minutes.
+Keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price. Edit to have release date in year month day hours min second format; make release year be extracted from date, and track time be in minutes.
 
 ```{r}
 apple_clean <- apple_music |>
@@ -108,6 +108,18 @@ spotify_clean <- spotify_music |>
  mutate(
    track_album_release_date = ymd(track_album_release_date),
    release_year = year(track_album_release_date))
+```
+
+### Clean the Global Music data
+
+Keep only artist name, country, and genre
+
+```{r}
+global_clean <- global_music |>
+ select(
+   artist_name,
+   country,
+   genre)
 ```
 
 ### Ideas
