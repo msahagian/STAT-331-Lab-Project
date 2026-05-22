@@ -26,6 +26,7 @@ execute:
 
 ```{r}
 library(tidyverse)
+library(knitr)
 #tbd on library(knitr) add a gt kableextra type beat
 ```
 
