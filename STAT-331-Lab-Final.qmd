@@ -20,7 +20,25 @@ execute:
 
 **Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a music fanatic journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
 
-### Import Data
+### Data Dictionary & Import
+
+#### Global Music:
+
+This dataset includes 100,000+ music artists from around the world, recording names, genres (pop, rock, jazz, or classical), profile image (in a link), and location (where the artist is from).
+
+Find more info on the data here: <https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image>
+
+#### Apple Music:
+
+The dataset includes information on various artists/tracks such as artist name, track name, genre, track duration, and release date, among others.
+
+Find more info on the data here: <https://www.kaggle.com/datasets/kanchana1990/apple-music-dataset-10000-tracks-uncovered>
+
+#### Spotify Music:
+
+The dataset includes information about songs such as artist name, album name and release date, as well as audio features such as tempo, danceability, acoustiness, energy, and more.
+
+Find more info on the data here: <https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download>
 
 ```{r}
 
@@ -29,11 +47,6 @@ global_music <- read.csv("./Global Music Artists.csv")
 apple_music <- read.csv("./apple_music_dataset.csv")
 
 spotify_music <- read.csv("./high_popularity_spotify_data.csv")
-
-#Find more info on the data here: 
-# Apple data: https://www.kaggle.com/datasets/kanchana1990/apple-music-dataset-10000-tracks-uncovered
-# Spotify data: https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download
-# Global data: https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image
 ```
 
 ### Packages
