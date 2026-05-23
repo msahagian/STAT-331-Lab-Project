@@ -27,7 +27,7 @@ execute:
 ```{r}
 library(tidyverse)
 library(knitr)
-#tbd on library(knitr) add a gt kableextra type beat
+#tbd on add a gt kableextra type beat
 ```
 
 # Mystery Concert
@@ -119,13 +119,9 @@ global_clean <- global_music |>
 Apple should be 10000 by 7, spotify 1686 by 10, and global 101375 by 3.
 
 ```{r}
-data_sizes <- tibble(
- dataset = c("Apple Music", "Spotify Music", "Global Music"),
- rows = c(nrow(apple_clean), nrow(spotify_clean), nrow(global_clean)),
- columns = c(ncol(apple_clean), ncol(spotify_clean), ncol(global_clean))
-)
-
-kable(data_sizes)
+kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
+             rows = c(nrow(apple_clean), nrow(spotify_clean), nrow(global_clean)),
+             columns = c(ncol(apple_clean), ncol(spotify_clean), ncol(global_clean))))
 
 #check numbers again later
 ```
@@ -136,7 +132,7 @@ kable(data_sizes)
 
 A celebrity posts "The mystery artist is definitely from the most common genre".
 
-Find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from most common to least common. Which genre is most common?
+Find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
 
 ```{r}
 apple_clean |>
@@ -177,7 +173,7 @@ apple_suspects <- apple_clean |>
 
 ### Clue 3
 
-The song played by the mystery artist has medium energy. Write a function to classify song energy as too low, match, or too high, then save possible suspects. Make a new dataset containing all suspects from spotify music.
+The hit song played by the mystery artist has medium energy. Write a function to classify song energy as too low, match, or too high, then save possible suspects. Make a new dataset containing all suspects from spotify music.
 
 ```{r}
 energy_clue <- function(energy_value) {
