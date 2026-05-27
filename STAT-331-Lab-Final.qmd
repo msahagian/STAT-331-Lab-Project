@@ -14,11 +14,26 @@ execute:
   warning: false
 ---
 
-# PULL commit PUSH
+## General notes for writing/edits to make
+
+```{r}
+# PULL commit PUSH - fix cleaning errors and multiples
+# Too much saved?
+# Need more from later units
+```
+
+## Packages
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(janitor)
+#tbd on add a gt kableextra type beat
+```
 
 # Mystery Concert
 
-**Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a music fanatic journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
+**Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
 
 ## Data Dictionary & Import
 
@@ -49,45 +64,22 @@ apple_music <- read.csv("./apple_music_dataset.csv")
 spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 ```
 
-## Packages
-
-```{r}
-#| label: packages
-
-library(tidyverse)
-#library(knitr) add a gt kableextra type beat
-```
-
 ## Data Cleaning
-
-```{r}
-apple: artist name, releasedate, trackname, primarygenre, tracktimemillis
-rename things in apple (remove: anything with Censored, explicitness, any price)
-
-global:artist_name and country
-
-spotify: track_artist, energy, tempo, danceibility, track album release date, track popularity, acoustiness
-(playlist genre with primary genre?)(remove: anything with id, anything with playlist)
-```
 
 ### Clean the Apple Music Data
 
-Keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price.
+Make the dataset apple_clean and keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price. Edit to have release date in year month day hours min second format; make release year be extracted from date, and track time be in minutes.
 
 ```{r}
 apple_clean <- apple_music |>
- clean_names() |>
- select(
-   artist_name = artistName,
-   track_name = trackName,
-   primary_genre_name = primaryGenreName,
-   release_date = releaseDate,
-   track_time_millis = trackTimeMillis) |>
- mutate(
-   release_date = ymd_hms(release_date),
-   release_year = year(release_date),
-   track_duration_min = track_time_millis / 60000
- )
+ select(artist_name = artistName,
+        track_name = trackName,
+        genre = primaryGenreName,
+        release_date = releaseDate,
+        track_time_millis = trackTimeMillis) |>
+ mutate(release_date = ymd_hms(release_date),
+        release_year = year(release_date),
+        track_duration_min = track_time_millis / 60000)
 ```
 
 ### Clean the Spotify Music Data
@@ -112,7 +104,179 @@ spotify_clean <- spotify_music |>
  mutate(
    track_album_release_date = ymd(track_album_release_date),
    release_year = year(track_album_release_date))
+```
+Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
 
+```{r}
+spotify_clean <- spotify_music |>
+ select(track_name,
+        track_artist,
+        track_popularity,
+        track_album_name,
+        track_album_release_date,
+        playlist_genre,
+        danceability,
+        energy,
+        tempo,
+        acousticness) |>
+ mutate(track_album_release_date = ymd(track_album_release_date),
+        release_year = year(track_album_release_date))
+
+
+#fix warning 81 failed to parse?
+```
+
+### Clean the Global Music data
+
+Make the dataset global_clean and keep only artist name, country, and genre
+
+```{r}
+global_clean <- global_music |>
+ select(artist_name,
+        country,
+        artist_genre)
+```
+
+#### Check sizes
+
+Apple should be 10000 by 7, spotify 1686 by 10, and global 101375 by 3.
+
+```{r}
+kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
+             rows = c(nrow(apple_clean), nrow(spotify_clean), nrow(global_clean)),
+             columns = c(ncol(apple_clean), ncol(spotify_clean), ncol(global_clean))))
+
+#check numbers again later
+```
+
+## Follow the clues
+
+### Clue One
+
+A celebrity posts "The mystery artist is definitely from the most common genre".
+
+Find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
+
+```{r}
+apple_clean |>
+ count(genre, sort = TRUE) |>
+ slice_max(n, n = 10) |>
+ ggplot(aes(x = fct_reorder(genre, n), y = n)) +
+ geom_col() +
+ labs(title = "Most Common Apple Music Genres",
+      x = "Genre",
+      y = "Number of Tracks")
+
+#fix names/tilt? decrease font size? tbd
+```
+
+### Clue Two
+
+Justin Bieber leaks: “The song is around four minutes long"
+
+Make a new dataset containing all suspects from apple music.
+
+```{r}
+apple_suspects <- apple_clean |>
+  filter(genre == "Pop",
+         track_duration_min >= 3.5,
+         track_duration_min <= 4.5)
+
+#too long to display
+#apple_suspects |>
+#  select(track_name,
+#         artist_name,
+#         genre,
+#        release_year,
+#         track_duration_min) |>
+#  arrange(track_duration_min) |>
+#  kable()
+
+```
+
+### Clue 3
+
+The hit song played by the mystery artist has medium energy. Write a function to classify song energy as too low, match, or too high, then save possible suspects. Make a new dataset containing all suspects from spotify music.
+
+```{r}
+energy_clue <- function(energy_value) {
+  
+  case_when(
+    energy_value < 0.45 ~ "Too low",
+    energy_value <= 0.65 ~ "Possible match",
+    energy_value > 0.65 ~ "Too high")
+  
+}
+```
+
+```{r}
+spotify_suspects <- spotify_clean |>
+  mutate(energy_match = energy_clue(energy)) |>
+  filter(energy_match == "Possible match")
+
+# too long to kable
+# spotify_suspects |>
+#   select(
+#     track_name,
+#     track_artist,
+#     energy,
+#     energy_match
+#   ) |>
+#   arrange(energy) |>
+#   kable()
+```
+
+### Clue 5
+
+TMZ leaks the song is popular and has a medium-high danceable score. Update your spotify suspects.
+
+```{r}
+spotify_suspects <- spotify_suspects |>
+  filter(track_popularity > 80,
+         danceability >= 0.60,
+         danceability <= 0.75)
+```
+
+### Clue 6
+
+The artist has songs on both Apple Music and Spotify. Make a new, combined suspect list.
+
+```{r}
+#music_joined 
+#inner join - need to clean up still
+music_suspects <- spotify_suspects |>
+  inner_join(apple_suspects,
+             by = join_by(
+               track_name == track_name,
+               track_artist == artist_name))
+
+#warning row 28 matches multiple and 53 matches multiple fix this?
+```
+
+### Clue 7
+
+A fan notices that the hints were posted on UK time. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom. Make a final, long suspect list. Which artist or group's appears?
+
+```{r}
+final_candidates <- music_suspects |>
+  left_join(global_clean,
+            by = join_by(track_artist == artist_name)) |>
+  filter(str_detect(country, "United Kingdom|UK|England"))
+
+# there are 4 of the same, at some step fix this
+```
+
+### Final Artist
+
+Display the final artist
+
+```{r}
+#maybe build this in to a different step is the problem of multiples gets fixed
+final_candidates |>
+  select(track_name,
+         track_artist) |>
+  distinct() |>
+  kable(caption = "Mystery Concert Artist and Big Song")
 ```
 
 ### Ideas
