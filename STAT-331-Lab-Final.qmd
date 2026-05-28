@@ -249,7 +249,7 @@ head(final_artists)
 #if we didn't learn how to mutate this stuff like predict() or something, maybe put a callout or a website link to assist
 ```
 
-### Clue 6
+### Clue 6: Going International
 
 A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the Unites States. You notice that most of these hints are posted when the UK is up and at 'em. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom.
 
