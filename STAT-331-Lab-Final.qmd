@@ -43,7 +43,7 @@ This dataset includes 100,000+ music artists from around the world, recording na
 
 Find more info on the data here: <https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image>
 
-#### Apple Music:
+#### Apple Music: 
 
 The dataset includes information on various artists/tracks such as artist name, track name, genre, track duration, and release date, among others.
 
@@ -108,6 +108,12 @@ spotify_clean <- spotify_music |>
 
 Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
 
+::: callout-note
+## Hint!
+
+Look into parse_date_time() !
+:::
+
 ```{r}
 spotify_clean <- spotify_music |>
  select(track_name,
@@ -120,10 +126,9 @@ spotify_clean <- spotify_music |>
         energy,
         tempo,
         acousticness) |>
- mutate(track_album_release_date = ymd(track_album_release_date),
-        release_year = year(track_album_release_date))
-
-
+ mutate(track_album_release_date = parse_date_time(track_album_release_date, 
+                                                   orders = c("ymd", "ym", "y")),
+        release_year = year(track_album_release_date)
 #fix warning 81 failed to parse?
 ```
 
@@ -166,9 +171,10 @@ apple_clean |>
  geom_col() +
  labs(title = "Most Common Apple Music Genres",
       x = "Genre",
-      y = "Number of Tracks")
+      y = "Number of Tracks") +
+  theme(axis.text.x = element_text(angle = 25))
 
-#fix names/tilt? decrease font size? tbd
+#fix names/tilt? decrease font size? tbd + color
 ```
 
 ### Clue Two
@@ -193,6 +199,7 @@ apple_suspects <- apple_clean |>
 #  arrange(track_duration_min) |>
 #  kable()
 
+# use standardizing
 ```
 
 ### Clue 3
@@ -279,6 +286,12 @@ final_candidates |>
   distinct() |>
   kable(caption = "Mystery Concert Artist and Big Song")
 ```
+
+## PLOTTT TWISTTTT
+
+One Direction just tweeted "Dude! We're getting the band back together! We're going to be playing at California Polytechnic State University San Luis Obispo this month! We know you're excited, but we're even more excited to announce that we're having a MYSTERY OPENER! Drop your guesses in the comments!"
+
+You don't guess. You use data.
 
 ### Ideas
 
