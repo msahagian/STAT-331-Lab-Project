@@ -14,12 +14,18 @@ execute:
   warning: false
 ---
 
-## General notes for writing/edits to make
+## Style to dos
 
 ```{r}
-# PULL commit PUSH - fix cleaning errors and multiples
-# Too much saved?
-# Need more from later units
+# Rewrite all questions + make it more fun like this artists said this type pls
+# Make sure all questions include a clear description on what to do for that question
+# I lowk labeled it suspects from instinct but maybe a different word would be better so maybe rename data
+#but if you rename the data make sure it gets changed everywhere
+# Add any callouts/that purple thing that looks like code out of code
+# Check with her labs to see if anything else should be included for style
+#pls check my code and logic
+#I just did displays with head() for logic but we can change this idk, kable instead or nothing idk
+#when I say high danceability or whatever we need to provide a range instead/also in the question
 ```
 
 ## Packages
@@ -28,7 +34,7 @@ execute:
 library(tidyverse)
 library(knitr)
 library(janitor)
-#tbd on add a gt kableextra type beat
+library(gt)
 ```
 
 # Mystery Concert
@@ -66,7 +72,7 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 
 ## Data Cleaning
 
-### Clean the Apple Music Data
+### 1. Clean the Apple Music Data
 
 Make the dataset apple_clean and keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price. Edit to have release date in year month day hours min second format; make release year be extracted from date, and track time be in minutes.
 
@@ -82,31 +88,9 @@ apple_clean <- apple_music |>
         track_duration_min = track_time_millis / 60000)
 ```
 
-### Clean the Spotify Music Data
+### 2. Clean the Spotify Music Data
 
-Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
-
-```{r}
-spotify_clean <- spotify_music |>
- clean_names() |>
- select(
-   track_album_name,
-   track_artist,
-   track_popularity,
-   track_album_name,
-   track_album_release_date,
-   playlist_genre,
-   danceability,
-   energy,
-   tempo,
-   acousticness
- ) |>
- mutate(
-   track_album_release_date = ymd(track_album_release_date),
-   release_year = year(track_album_release_date))
-```
-
-Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
+Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released. Dont include track_album_release_date.
 
 ::: callout-note
 ## Hint!
@@ -128,11 +112,11 @@ spotify_clean <- spotify_music |>
         acousticness) |>
  mutate(track_album_release_date = parse_date_time(track_album_release_date, 
                                                    orders = c("ymd", "ym", "y")),
-        release_year = year(track_album_release_date)
-#fix warning 81 failed to parse?
+        release_year = year(track_album_release_date)) |>
+ select(-track_album_release_date)
 ```
 
-### Clean the Global Music data
+### 3. Clean the Global Music data
 
 Make the dataset global_clean and keep only artist name, country, and genre
 
@@ -143,16 +127,15 @@ global_clean <- global_music |>
         artist_genre)
 ```
 
-#### Check sizes
+#### Check in: Check sizes
 
-Apple should be 10000 by 7, spotify 1686 by 10, and global 101375 by 3.
+Display with... Apple should be 10000 by 7, spotify 1686 by 10, and global 101375 by 3.
 
 ```{r}
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
              rows = c(nrow(apple_clean), nrow(spotify_clean), nrow(global_clean)),
              columns = c(ncol(apple_clean), ncol(spotify_clean), ncol(global_clean))))
 
-#check numbers again later
 ```
 
 ## Follow the clues
@@ -167,152 +150,129 @@ Find the most common genres in the Apple Music data by creating a plot and sorti
 apple_clean |>
  count(genre, sort = TRUE) |>
  slice_max(n, n = 10) |>
- ggplot(aes(x = fct_reorder(genre, n), y = n)) +
+ ggplot(aes(x = fct_reorder(genre, n), y = n, fill = fct_reorder(genre, n))) +
  geom_col() +
  labs(title = "Most Common Apple Music Genres",
       x = "Genre",
-      y = "Number of Tracks") +
+      y = "Number of Tracks",
+      fill = 'Genre') +
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 25))
 
-#fix names/tilt? decrease font size? tbd + color
+#labels from both x-axis and legend...? include or no? Should this be a gradient instead?
 ```
+
+The most common music genre in the Apple music data is Pop.
 
 ### Clue Two
 
 Justin Bieber leaks: “The song is around four minutes long"
 
-Make a new dataset containing all suspects from apple music.
+Write a function to classify song length. Possible matches between 3.5 and 4.5 min (or like 1min possible difference from Justin). Make a new dataset containing all potential suspects from apple music (with the info of time and genre - remember to use your genre from last clue).
 
 ```{r}
+song_length <- function(minutes) {
+  case_when(minutes < 3.5 ~ "Too short",
+            minutes <= 4.5 ~ "Possible match",
+            minutes > 4.5 ~ "Too long")}
+
 apple_suspects <- apple_clean |>
+  mutate(duration_match = song_length(track_duration_min)) |>
   filter(genre == "Pop",
-         track_duration_min >= 3.5,
-         track_duration_min <= 4.5)
+         duration_match == "Possible match")
 
-#too long to display
-#apple_suspects |>
-#  select(track_name,
-#         artist_name,
-#         genre,
-#        release_year,
-#         track_duration_min) |>
-#  arrange(track_duration_min) |>
-#  kable()
-
-# use standardizing
+head(apple_suspects)
 ```
 
 ### Clue 3
 
-The hit song played by the mystery artist has medium energy. Write a function to classify song energy as too low, match, or too high, then save possible suspects. Make a new dataset containing all suspects from spotify music.
+The hit song played by the mystery artist has medium energy and medium-high danceability. Write a data frame function that filters for this, then make a new dataset containing all suspects from spotify music, using the new function.
 
 ```{r}
-energy_clue <- function(energy_value) {
+energy_and_danceability <- function(df) {
   
-  case_when(
-    energy_value < 0.45 ~ "Too low",
-    energy_value <= 0.65 ~ "Possible match",
-    energy_value > 0.65 ~ "Too high")
+  df |>
+    filter(energy >= 0.45,
+           energy <= 0.65,
+           danceability >= 0.60,
+           danceability <= 0.75)
   
 }
+
+spotify_suspects <- spotify_clean |>
+  energy_and_danceability()
+
+head(spotify_suspects)
 ```
 
-```{r}
-spotify_suspects <- spotify_clean |>
-  mutate(energy_match = energy_clue(energy)) |>
-  filter(energy_match == "Possible match")
+### Clue 4
 
-# too long to kable
-# spotify_suspects |>
-#   select(
-#     track_name,
-#     track_artist,
-#     energy,
-#     energy_match
-#   ) |>
-#   arrange(energy) |>
-#   kable()
+The artist has songs on both Apple Music and Spotify. Make a new, combined suspect list, but remove any duplicates before combining. (maybe callout distinct or something about joining by multiple things idk)
+
+```{r}
+spotify_suspects <- spotify_suspects |>
+  distinct(track_name, track_artist, .keep_all = TRUE)
+
+apple_suspects <- apple_suspects |>
+  distinct(track_name, artist_name, .keep_all = TRUE)
+
+final_suspects <- spotify_suspects |>
+  inner_join(apple_suspects,
+             by = join_by(track_name == track_name,
+                          track_artist == artist_name,
+                          release_year == release_year))
 ```
 
 ### Clue 5
 
-TMZ leaks the song is popular and has a medium-high danceable score. Update your spotify suspects.
+TMZ leaks the song is popular. The mystery song is more popular than expected based on audio features of ... Use linear regression to find. Keep top 3 in popularity
 
 ```{r}
-spotify_suspects <- spotify_suspects |>
-  filter(track_popularity > 80,
-         danceability >= 0.60,
-         danceability <= 0.75)
+popularity_model <- lm(track_popularity ~ danceability + energy + tempo + acousticness,
+                       data = final_suspects)
+
+final_suspects <- final_suspects |>
+  mutate(predicted_popularity = predict(popularity_model, newdata = final_suspects),
+         popularity_difference = track_popularity - predicted_popularity) |>
+  slice_max(popularity_difference, n = 3)
+
+head(final_suspects)
+
+#if we didn't learn how to mutate this stuff like predict() or something, maybe put a callout or a website link to assist
 ```
 
 ### Clue 6
 
-The artist has songs on both Apple Music and Spotify. Make a new, combined suspect list.
+A fan notices that the hints were posted when the UK is up and at em. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom.
 
 ```{r}
-#music_joined 
-#inner join - need to clean up still
-music_suspects <- spotify_suspects |>
-  inner_join(apple_suspects,
-             by = join_by(
-               track_name == track_name,
-               track_artist == artist_name))
-
-#warning row 28 matches multiple and 53 matches multiple fix this?
-```
-
-### Clue 7
-
-A fan notices that the hints were posted on UK time. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom. Make a final, long suspect list. Which artist or group's appears?
-
-```{r}
-final_candidates <- music_suspects |>
+final_suspects <- final_suspects |>
   left_join(global_clean,
             by = join_by(track_artist == artist_name)) |>
-  filter(str_detect(country, "United Kingdom|UK|England"))
+  filter(str_detect(country, "United Kingdom"))
 
-# there are 4 of the same, at some step fix this
+head(final_suspects)
 ```
 
 ### Final Artist
 
-Display the final artist
+\_\_ says 'this is one of the best songs from the 2010s / the headlining song is the ya anyways. Display the final artist use gt
 
 ```{r}
-#maybe build this in to a different step is the problem of multiples gets fixed
-final_candidates |>
+final_suspects |>
+  filter(release_year >= 2010,
+         release_year < 2020) |>
   select(track_name,
          track_artist) |>
   distinct() |>
-  kable(caption = "Mystery Concert Artist and Big Song")
+  gt() |>
+  tab_header(title = "Mystery Concert Artist and Big Song") |>
+  cols_label(track_name = "Song",
+             track_artist = "Artist")
 ```
 
-## PLOTTT TWISTTTT
+::: callout-note
+## Result
 
-One Direction just tweeted "Dude! We're getting the band back together! We're going to be playing at California Polytechnic State University San Luis Obispo this month! We know you're excited, but we're even more excited to announce that we're having a MYSTERY OPENER! Drop your guesses in the comments!"
-
-You don't guess. You use data.
-
-### Ideas
-
-Pick: Night Changes - OneDirection
-
-Lubridate time zone to figure out they're from the UK (ex it's this time for the artist)
-
-Fix the track_name/merge/get ride of playlist info
-
-Don't join apply music country
-
-1\) Data cleaning stuff (which rows to save/not save)(how many rows and cols)
-
-2\) Clues
-
-3\) GGPlot most popular genre, factor reorder by genre (Pop)
-
-4\) Energy level: medium high danceability (.672) and medium energy (0.52) leaked by justin bieber
-
-6\) song duration - tracktimemillis
-
-5\) data joins
-
-6\) Country of origin/when track came out/release date - with date
+The artist and their headlineing song is ...!!\_\_\_\_
+:::
