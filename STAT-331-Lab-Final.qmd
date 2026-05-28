@@ -105,6 +105,7 @@ spotify_clean <- spotify_music |>
    track_album_release_date = ymd(track_album_release_date),
    release_year = year(track_album_release_date))
 ```
+
 Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released.
 
 ```{r}
