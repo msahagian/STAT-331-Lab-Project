@@ -264,7 +264,6 @@ final_suspects |>
          release_year < 2020) |>
   select(track_name,
          track_artist) |>
-  distinct() |>
   gt() |>
   tab_header(title = "Mystery Concert Artist and Big Song") |>
   cols_label(track_name = "Song",
