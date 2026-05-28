@@ -43,7 +43,7 @@ This dataset includes 100,000+ music artists from around the world, recording na
 
 Find more info on the data here: <https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image>
 
-#### Apple Music:
+#### Apple Music: 
 
 The dataset includes information on various artists/tracks such as artist name, track name, genre, track duration, and release date, among others.
 
