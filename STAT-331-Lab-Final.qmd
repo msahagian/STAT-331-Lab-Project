@@ -14,20 +14,6 @@ execute:
   warning: false
 ---
 
-## Style to dos
-
-```{r}
-# Rewrite all questions + make it more fun like this artists said this type pls
-# Make sure all questions include a clear description on what to do for that question
-# I lowk labeled it suspects from instinct but maybe a different word would be better so maybe rename data
-#but if you rename the data make sure it gets changed everywhere
-# Add any callouts/that purple thing that looks like code out of code
-# Check with her labs to see if anything else should be included for style
-#pls check my code and logic
-#I just did displays with head() for logic but we can change this idk, kable instead or nothing idk
-#when I say high danceability or whatever we need to provide a range instead/also in the question
-```
-
 ## Packages
 
 ```{r}
@@ -131,7 +117,7 @@ global_clean <- global_music |>
 
 #### Check in: Check sizes
 
-Display with... Apple should be 10000 by 7, spotify 1686 by 10, and global 101375 by 3.
+Apple should be 10000 rows by 7 columns, spotify should be 1686 rows by 10 columns, and global should be 101375 rows by 3 columns.
 
 ```{r}
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
@@ -152,23 +138,21 @@ Your job now is to find the most common genres in the Apple Music data by creati
 apple_clean |>
  count(genre, sort = TRUE) |>
  slice_max(n, n = 10) |>
- ggplot(aes(x = fct_reorder(genre, n), y = n, fill = fct_reorder(genre, n))) +
- geom_col() +
+ ggplot(aes(x = fct_reorder(genre, n), y = n)) +
+ geom_col(fill = 'skyblue') +
  labs(title = "Most Common Apple Music Genres",
       x = "Genre",
-      y = "Number of Tracks",
-      fill = 'Genre') +
+      y = "",
+      subtitle = 'Number of Tracks') +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 25))
-
-#labels from both x-axis and legend...? include or no? Should this be a gradient instead?
 ```
 
 The most common music genre in the Apple music data is Pop.
 
 ### Clue 2: Promo song length
 
-Hurrah! You're one step closer to finding the mystery artist. There are some talks of there being a certain song that is being used as a promo track, and as a data-driven Mustang News journalist, you know that narrowing down that promo track will help you narrow down the mystery headliner. Justin Bieber accidentally leaks on his Instagram Live that “The song is around four minutes long"
+Hurrah! You're one step closer to finding the mystery artist. There are some talks of there being a certain song that is being used as a promo track, and as a data-driven Mustang News journalist, you know that narrowing down that promo track will help you narrow down the mystery headliner. Justin Bieber accidentally leaks on his Instagram Live that “The song is around four minutes long".
 
 Write a function to classify song length. Possible matches will be between 3.5 and 4.5 minutes. Make a new dataset containing all possibilities from apple music (with the info of time and genre - remember to use your genre from last clue).
 
@@ -187,6 +171,8 @@ head(apple_artists)
 ```
 
 ### Clue 3: Promo song filter
+
+Bad Bunny tweets, "The headlining song at the Cal Poly concert is stuck in my head. It's got a nice groove; it's not too energetic, but it's still dance-worthy."
 
 The hit song played by the mystery artist has medium `energy` (45%-65%) and medium-high `danceability` (60%-75%). Write a data frame function that filters for this, then create a dataset containing all potential artists from Spotify music, using the new function.
 
@@ -285,5 +271,5 @@ final_artists |>
 ::: callout-note
 ## Result
 
-The artist and their headlineing song is ...One Direction headlining with Night Changes!!
+The artist and their headlineing song is ... One Direction headlining with Night Changes!!
 :::
