@@ -251,8 +251,6 @@ final_artists <- final_artists |>
   slice_max(popularity_difference, n = 3)
 
 head(final_artists)
-
-#if we didn't learn how to mutate this stuff like predict() or something, maybe put a callout or a website link to assist
 ```
 
 ### Clue 6: Going International
@@ -287,5 +285,5 @@ final_artists |>
 ::: callout-note
 ## Result
 
-The artist and their headlineing song is ... \_\_\_\_One Direction headlining with Night Changes\_\_\_\_!!
+The artist and their headlineing song is ...One Direction headlining with Night Changes!!
 :::
