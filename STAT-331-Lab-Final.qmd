@@ -72,6 +72,8 @@ spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 
 ## Data Cleaning
 
+Before you can discover the mystery artist playing at Cal Poly, you need to clean up the data that you're looking at. Be quick, the students at Cal Poly are counting on you!
+
 ### 1. Clean the Apple Music Data
 
 Make the dataset apple_clean and keep only the variables needed for the investigation: artist name, track name, primary genre, release date, and track duration in milliseconds. There should be no columns related to censorship, explicitness, and price. Edit to have release date in year month day hours min second format; make release year be extracted from date, and track time be in minutes.
@@ -90,9 +92,9 @@ apple_clean <- apple_music |>
 
 ### 2. Clean the Spotify Music Data
 
-Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released. Dont include track_album_release_date.
+Make the dataset spotify_clean and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables related to artist identity, popularity, release date, and audio features. Create a new column called "release year" that has the year the track was released. Don't include track_album_release_date.
 
-::: callout-note
+::: {.callout-note style="color: green"}
 ## Hint!
 
 Look into parse_date_time() !
@@ -118,7 +120,7 @@ spotify_clean <- spotify_music |>
 
 ### 3. Clean the Global Music data
 
-Make the dataset global_clean and keep only artist name, country, and genre
+Make the dataset global_clean and keep only artist name, country, and genre.
 
 ```{r}
 global_clean <- global_music |>
@@ -138,13 +140,13 @@ kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
 
 ```
 
-## Follow the clues
+## Follow the clues!
 
-### Clue One
+### Clue 1: Most common music genre plot
 
-A celebrity posts "The mystery artist is definitely from the most common genre".
+Congrats on finishing the first step and cleaning up the data! You feel a bit hopeless because you don't have any clues, but then, your friend alerts you that Doja Cat just posted a TikTok about the Cal Poly concert, saying that "The mystery artist is definitely from the most common genre".
 
-Find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
+Your job now is to find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
 
 ```{r}
 apple_clean |>
@@ -164,11 +166,11 @@ apple_clean |>
 
 The most common music genre in the Apple music data is Pop.
 
-### Clue Two
+### Clue 2: Promo song length
 
-Justin Bieber leaks: “The song is around four minutes long"
+Hurrah! You're one step closer to finding the mystery artist. There are some talks of there being a certain song that is being used as a promo track, and as a data-driven Mustang News journalist, you know that narrowing down that promo track will help you narrow down the mystery headliner. Justin Bieber accidentally leaks on his Instagram Live that “The song is around four minutes long"
 
-Write a function to classify song length. Possible matches between 3.5 and 4.5 min (or like 1min possible difference from Justin). Make a new dataset containing all potential suspects from apple music (with the info of time and genre - remember to use your genre from last clue).
+Write a function to classify song length. Possible matches will be between 3.5 and 4.5 minutes. Make a new dataset containing all potential suspects from apple music (with the info of time and genre - remember to use your genre from last clue).
 
 ```{r}
 song_length <- function(minutes) {
@@ -176,17 +178,17 @@ song_length <- function(minutes) {
             minutes <= 4.5 ~ "Possible match",
             minutes > 4.5 ~ "Too long")}
 
-apple_suspects <- apple_clean |>
+apple_artists <- apple_clean |>
   mutate(duration_match = song_length(track_duration_min)) |>
   filter(genre == "Pop",
          duration_match == "Possible match")
 
-head(apple_suspects)
+head(apple_artists)
 ```
 
-### Clue 3
+### Clue 3: Promo song filter
 
-The hit song played by the mystery artist has medium energy and medium-high danceability. Write a data frame function that filters for this, then make a new dataset containing all suspects from spotify music, using the new function.
+The hit song played by the mystery artist has medium energy (45%-65%) and medium-high danceability (60%-75%). Write a data frame function that filters for this, then create a dataset containing all potential artists from Spotify music, using the new function.
 
 ```{r}
 energy_and_danceability <- function(df) {
@@ -199,67 +201,73 @@ energy_and_danceability <- function(df) {
   
 }
 
-spotify_suspects <- spotify_clean |>
+spotify_artists <- spotify_clean |>
   energy_and_danceability()
 
-head(spotify_suspects)
+head(spotify_artists)
 ```
 
-### Clue 4
+### Clue 4: Combine Datasets
 
-The artist has songs on both Apple Music and Spotify. Make a new, combined suspect list, but remove any duplicates before combining. (maybe callout distinct or something about joining by multiple things idk)
+Since such huge names are talking about this mystery artist, you know that the artist has songs on both Apple Music and Spotify. Make a new, combined suspect list, but remove any duplicates before combining.
+
+::: {.callout-note style="color: green"}
+## Hint!
+
+Try using distinct() to remove any duplicates of songs!
+:::
 
 ```{r}
-spotify_suspects <- spotify_suspects |>
+spotify_artists <- spotify_artists |>
   distinct(track_name, track_artist, .keep_all = TRUE)
 
-apple_suspects <- apple_suspects |>
+apple_artists <- apple_artists |>
   distinct(track_name, artist_name, .keep_all = TRUE)
 
-final_suspects <- spotify_suspects |>
-  inner_join(apple_suspects,
+final_artists <- spotify_artists |>
+  inner_join(apple_artists,
              by = join_by(track_name == track_name,
                           track_artist == artist_name,
                           release_year == release_year))
 ```
 
-### Clue 5
+### Clue 5: Predict Popularity
 
-TMZ leaks the song is popular. The mystery song is more popular than expected based on audio features of ... Use linear regression to find. Keep top 3 in popularity
+TMZ leaks the song is popular. The mystery song is more popular than expected based on audio features of danceability, energy, tempo, and acousticness. Use linear regression to find the popular artists. Make sure that you only keep the top three in popularity.
 
 ```{r}
 popularity_model <- lm(track_popularity ~ danceability + energy + tempo + acousticness,
-                       data = final_suspects)
+                       data = final_artists)
 
-final_suspects <- final_suspects |>
-  mutate(predicted_popularity = predict(popularity_model, newdata = final_suspects),
+final_artists <- final_artists |>
+  mutate(predicted_popularity = predict(popularity_model, newdata = final_artists),
          popularity_difference = track_popularity - predicted_popularity) |>
   slice_max(popularity_difference, n = 3)
 
-head(final_suspects)
+head(final_artists)
 
 #if we didn't learn how to mutate this stuff like predict() or something, maybe put a callout or a website link to assist
 ```
 
-### Clue 6
+### Clue 6: Going International
 
-A fan notices that the hints were posted when the UK is up and at em. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom.
+A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the Unites States. You notice that most of these hints are posted when the UK is up and at 'em. Join the remaining suspects to the global artist data and filter for artists from the United Kingdom.
 
 ```{r}
-final_suspects <- final_suspects |>
+final_artists <- final_artists |>
   left_join(global_clean,
             by = join_by(track_artist == artist_name)) |>
   filter(str_detect(country, "United Kingdom"))
 
-head(final_suspects)
+head(final_artists)
 ```
 
 ### Final Artist
 
-\_\_ says 'this is one of the best songs from the 2010s / the headlining song is the ya anyways. Display the final artist use gt
+You're almost there! Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days. The promo song is one of the best songs from the 2010s. Complete the final filter based on these clues, and display your results using the gt() function.
 
 ```{r}
-final_suspects |>
+final_artists |>
   filter(release_year >= 2010,
          release_year < 2020) |>
   select(track_name,
@@ -273,5 +281,5 @@ final_suspects |>
 ::: callout-note
 ## Result
 
-The artist and their headlineing song is ...!!\_\_\_\_
+The artist and their headlineing song is ... \_\_\_\_One Direction headlining with Night Changes\_\_\_\_!!
 :::
