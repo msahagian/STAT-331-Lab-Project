@@ -191,6 +191,7 @@ spotify_artists <- spotify_clean |>
   energy_and_danceability()
 
 head(spotify_artists)
+#make numbers and variable names inputs --> 2 steps
 ```
 
 ### Clue 4: Combine Datasets
@@ -237,6 +238,7 @@ final_artists <- final_artists |>
   slice_max(popularity_difference, n = 3)
 
 head(final_artists)
+#use augment, head with kable
 ```
 
 ### Clue 6: Going International
@@ -266,6 +268,8 @@ final_artists |>
   tab_header(title = "Mystery Concert Artist and Big Song") |>
   cols_label(track_name = "Song",
              track_artist = "Artist")
+
+#combine 6/final
 ```
 
 ::: callout-note
