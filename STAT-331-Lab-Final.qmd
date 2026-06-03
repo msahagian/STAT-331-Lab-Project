@@ -21,6 +21,8 @@ library(tidyverse)
 library(knitr)
 library(janitor)
 library(gt)
+library(broom)
+library(knitr)
 ```
 
 # Mystery Concert
@@ -121,9 +123,10 @@ Apple should be 10000 rows by 7 columns, spotify should be 1686 rows by 10 colum
 
 ```{r}
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
-             rows = c(nrow(apple_clean), nrow(spotify_clean), nrow(global_clean)),
-             columns = c(ncol(apple_clean), ncol(spotify_clean), ncol(global_clean))))
-
+             rows = c(nrow(apple_clean), nrow(spotify_clean), 
+                      nrow(global_clean)),
+             columns = c(ncol(apple_clean), ncol(spotify_clean), 
+                         ncol(global_clean))))
 ```
 
 ## Follow the clues!
@@ -167,31 +170,37 @@ apple_artists <- apple_clean |>
   filter(genre == "Pop",
          duration_match == "Possible match")
 
-head(apple_artists)
+kable(head(apple_artists))
 ```
 
 ### Clue 3: Promo song filter
 
 Bad Bunny tweets, "The headlining song at the Cal Poly concert is stuck in my head. It's got a nice groove; it's not too energetic, but it's still dance-worthy."
 
-The hit song played by the mystery artist has medium `energy` (45%-65%) and medium-high `danceability` (60%-75%). Write a data frame function that filters for this, then create a dataset containing all potential artists from Spotify music, using the new function.
+The hit song played by the mystery artist has medium energy (45%–65%) and medium-high danceability (60%–75%).
+
+Write a data frame function called between_filter() that:
+
+-   takes a data frame, a variable name, a minimum value, and a maximum value,
+
+-   and returns only the rows where the chosen variable falls between the minimum and maximum values (inclusive).
+
+Use your function twice to create a new data frame called spotify_artists containing songs with: energy between 0.45 and 0.65, and danceability between 0.60 and 0.75. Display the first rows of spotify_artists using kable().
 
 ```{r}
-energy_and_danceability <- function(df) {
+between_filter <- function(df, var, min, max) {
   
   df |>
-    filter(energy >= 0.45,
-           energy <= 0.65,
-           danceability >= 0.60,
-           danceability <= 0.75)
+    filter({{ var }} >= min,
+           {{ var }} <= max)
   
 }
 
 spotify_artists <- spotify_clean |>
-  energy_and_danceability()
+  between_filter(energy, 0.45, 0.65) |>
+  between_filter(danceability, 0.60, 0.75)
 
-head(spotify_artists)
-#make numbers and variable names inputs --> 2 steps
+kable(head(spotify_artists))
 ```
 
 ### Clue 4: Combine Datasets
@@ -220,60 +229,50 @@ final_artists <- spotify_artists |>
 
 ### Clue 5: Predict Popularity
 
-TMZ leaks that the song is popular. The mystery song is more popular than expected based on audio features of `danceability`, `energy`, `tempo`, and `acousticness`. Use linear regression to find the popular artists. Make sure that you only keep the top three in popularity.
-
-::: {.callout-note style="color: green"}
-## Hint!
-
-You will want to use the predict() function, find more information about predict() here: https://www.geeksforgeeks.org/r-machine-learning/predict-function-in-r/
-:::
+TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Fit a linear regression model called popularity_model that predicts track_popularity using: danceability, energy, tempo, acousticness. Use augment() to add the model's predicted popularity values to final_artists. Create a new variable called popularity_difference that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using kable().
 
 ```{r}
-popularity_model <- lm(track_popularity ~ danceability + energy + tempo + acousticness,
+popularity_model <- lm(track_popularity ~ danceability + 
+                         energy + tempo + acousticness,
                        data = final_artists)
 
-final_artists <- final_artists |>
-  mutate(predicted_popularity = predict(popularity_model, newdata = final_artists),
-         popularity_difference = track_popularity - predicted_popularity) |>
+final_artists <- popularity_model |>
+  augment(newdata = final_artists) |>
+  mutate(popularity_difference = track_popularity - .fitted) |>
   slice_max(popularity_difference, n = 3)
 
-head(final_artists)
-#use augment, head with kable
+final_artists |>
+  head() |>
+  kable()
 ```
 
-### Clue 6: Going International
+### Clue 6: International Time Travel
 
-A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the Unites States. You notice that most of these hints are posted when the UK is up and at 'em. Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom.
+A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the Unites States. You notice that most of these hints are posted when the UK is up and at 'em.
+
+Then, Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days. The promo song is one of the best songs from the 2010s.
+
+Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom. Further narrow the results to songs released during the 2010s. Complete the final filter based on these clues, and display your results using the gt() function.
 
 ```{r}
 final_artists <- final_artists |>
   left_join(global_clean,
             by = join_by(track_artist == artist_name)) |>
-  filter(str_detect(country, "United Kingdom"))
+  filter(str_detect(country, "United Kingdom"),
+         release_year >= 2010,
+         release_year < 2020)
 
-head(final_artists)
-```
-
-### Final Artist
-
-You're almost there! Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days. The promo song is one of the best songs from the 2010s. Complete the final filter based on these clues, and display your results using the gt() function.
-
-```{r}
 final_artists |>
-  filter(release_year >= 2010,
-         release_year < 2020) |>
   select(track_name,
          track_artist) |>
   gt() |>
   tab_header(title = "Mystery Concert Artist and Big Song") |>
   cols_label(track_name = "Song",
              track_artist = "Artist")
-
-#combine 6/final
 ```
 
 ::: callout-note
 ## Result
 
-The artist and their headlineing song is ... One Direction headlining with Night Changes!!
+The artist and their headlining song is ... One Direction headlining with Night Changes!!
 :::
