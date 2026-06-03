@@ -64,7 +64,7 @@ Before you can discover the mystery artist playing at Cal Poly, you need to clea
 
 ### 1. Clean the Apple Music Data
 
-Make a dataset called `apple_clean` and keep only the variables needed for the investigation: `artistName`, `trackName`, `primaryGenreName`, `releaseDate`, and `trackTimeMillis` . There should be no columns related to censorship, explicitness, and price. Rename these variables if neccessary. Edit the `releaseDate` column sot it has the date in year month day hours min second format; extract the release year from the date, and make the track time be in minutes.
+Make a dataset called `apple_clean` and keep only the variables needed for the investigation: `artistName`, `trackName`, `primaryGenreName`, `releaseDate`, and `trackTimeMillis` . There should be no columns related to censorship, explicitness, and price. Rename these variables if neccessary. Edit the `releaseDate` column so it has the date in year-month-day, hours-min-second format; extract the release year from the date, and make the track time be in minutes.
 
 ```{r}
 apple_clean <- apple_music |>
@@ -108,7 +108,7 @@ spotify_clean <- spotify_music |>
 
 ### 3. Clean the Global Music data
 
-Make the dataset `global_clean` and keep only artist name, country, and genre.
+Make the dataset `global_clean` and keep only `artist_name`, `country`, and `genre`.
 
 ```{r}
 global_clean <- global_music |>
@@ -119,7 +119,7 @@ global_clean <- global_music |>
 
 #### Check in: Check sizes
 
-Apple should be 10000 rows by 7 columns, spotify should be 1686 rows by 10 columns, and global should be 101375 rows by 3 columns.
+Apple Music should be 10000 rows by 7 columns, Spotify Music should be 1686 rows by 10 columns, and Global Music should be 101375 rows by 3 columns.
 
 ```{r}
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
@@ -181,11 +181,11 @@ The hit song played by the mystery artist has medium energy (45%–65%) and medi
 
 Write a data frame function called between_filter() that:
 
--   takes a data frame, a variable name, a minimum value, and a maximum value,
+- takes a data frame, a variable name, a minimum value, and a maximum value,
 
--   and returns only the rows where the chosen variable falls between the minimum and maximum values (inclusive).
+- and returns only the rows where the chosen variable falls between the minimum and maximum values (inclusive).
 
-Use your function twice to create a new data frame called spotify_artists containing songs with: energy between 0.45 and 0.65, and danceability between 0.60 and 0.75. Display the first rows of spotify_artists using kable().
+Use your function twice to create a new data frame called `spotify_artists` containing songs with: `energy` between 0.45 and 0.65, and `danceability` between 0.60 and 0.75. Display the first rows of `spotify_artists` using kable().
 
 ```{r}
 between_filter <- function(df, var, min, max) {
@@ -229,7 +229,7 @@ final_artists <- spotify_artists |>
 
 ### Clue 5: Predict Popularity
 
-TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Fit a linear regression model called popularity_model that predicts track_popularity using: danceability, energy, tempo, acousticness. Use augment() to add the model's predicted popularity values to final_artists. Create a new variable called popularity_difference that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using kable().
+TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. Create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
 
 ```{r}
 popularity_model <- lm(track_popularity ~ danceability + 
@@ -252,7 +252,7 @@ A fan notices that all of these hints were posted at some strange times in Pacif
 
 Then, Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days. The promo song is one of the best songs from the 2010s.
 
-Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom. Further narrow the results to songs released during the 2010s. Complete the final filter based on these clues, and display your results using the gt() function.
+Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom. Further narrow the results to songs released during the 2010s. Complete the final filter based on these clues, and display your results using the `gt()` function.
 
 ```{r}
 final_artists <- final_artists |>
