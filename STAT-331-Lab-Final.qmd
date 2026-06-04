@@ -18,7 +18,6 @@ execute:
 
 ```{r}
 library(tidyverse)
-library(knitr)
 library(janitor)
 library(gt)
 library(broom)
@@ -170,6 +169,12 @@ Hurrah! You're one step closer to finding the mystery artist. There are some tal
 
 Write a function to classify song length that takes a song duration in minutes as input and outputs if a song is too short, a possible match, or too long. Possible matches will be between 3.5 and 4.5 minutes. Make a new dataset containing all possibilities from apple music (remember to use your genre from the previous clue).
 
+::: callout-note
+## Hint!
+
+Use the case_when() function here to stay tidy ;)
+:::
+
 ```{r}
 song_length <- function(minutes) {
   case_when(minutes < 3.5 ~ "Too short",
@@ -242,7 +247,7 @@ final_artists <- spotify_artists |>
 
 ### Clue 5: Predict Popularity
 
-TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. Create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
+TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Using the final_artists data set which you created in Clue 4, fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. Create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
 
 ```{r}
 popularity_model <- lm(track_popularity ~ danceability + 
