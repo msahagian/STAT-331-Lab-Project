@@ -169,7 +169,7 @@ Hurrah! You're one step closer to finding the mystery artist. There are some tal
 
 Write a function to classify song length that takes a song duration in minutes as input and outputs if a song is too short, a possible match, or too long. Possible matches will be between 3.5 and 4.5 minutes. Make a new dataset containing all possibilities from apple music (remember to use your genre from the previous clue).
 
-::: callout-note
+::: {.callout-note style="color: green"}
 ## Hint!
 
 Use the case_when() function here to stay tidy ;)
