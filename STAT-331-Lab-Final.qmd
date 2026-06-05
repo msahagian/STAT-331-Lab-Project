@@ -58,7 +58,7 @@ apple_music <- read.csv("./apple_music_dataset.csv")
 
 spotify_music <- read.csv("./high_popularity_spotify_data.csv")
 
-#if you named the csv differently, edit the file path
+#if you saved the data differently, edit the file path
 ```
 
 ## Data Cleaning
