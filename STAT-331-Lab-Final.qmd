@@ -107,6 +107,7 @@ spotify_clean <- spotify_music |>
                                                    orders = c("ymd", "ym", "y")),
         release_year = year(track_album_release_date)) |>
  select(-track_album_release_date)
+#https://www.rdocumentation.org/packages/lubridate/versions/1.9.5/topics/parse_date_time
 ```
 
 ### 3. Clean the Global Music data
@@ -196,7 +197,7 @@ Bad Bunny tweets, "The headlining song at the Cal Poly concert is stuck in my he
 
 The hit song played by the mystery artist has medium energy (45%–65%) and medium-high danceability (60%–75%).
 
-Write a data frame function called between_filter() that:
+Write a data frame function that:
 
 -   takes a data frame, a variable name, a minimum value, and a maximum value,
 
@@ -247,7 +248,7 @@ final_artists <- spotify_artists |>
 
 ### Clue 5: Predict Popularity
 
-TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Using the final_artists data set which you created in Clue 4, fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. Create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
+TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Using the final_artists data set which you created in Clue 4, fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. You'll need to create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
 
 ```{r}
 popularity_model <- lm(track_popularity ~ danceability + 
