@@ -114,10 +114,11 @@ If your cleaning was successful, Apple Music should have 10,000 rows and 7 colum
 
 ```{r}
 #fill in the blanks
+
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
-             rows = c(_____, _____, _____),
-             columns = c(_____, _____, _____)),
-      caption = 'Verified clean dataset dimensions')
+    rows = c(# fill in row counts here),
+    columns = c(# fill in column counts here)),
+  caption = "Verified clean dataset dimensions")
 ```
 
 ## Follow the clues!
