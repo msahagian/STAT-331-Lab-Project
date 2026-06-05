@@ -108,7 +108,7 @@ After cleaning:
 -   `spotify_clean`: each row represents one Spotify track, with artist, popularity, album, release year, genre, and audio features.
 -   `global_clean`: each row represents one global music artist, including artist name, country, and genre.
 
-Before continuing, confirm that your clean data matches the expected dataset sizes. Replace the NA's by filling in the missing expressions so that the resulting table displays the number of rows and columns in each cleaned dataset.
+Before continuing, confirm that your clean data matches the expected dataset sizes. Replace the NA's with the missing expressions so that the resulting table displays the number of rows and columns in each cleaned dataset.
 
 If your cleaning was successful, Apple Music should have 10,000 rows and 7 columns, Spotify Music should have 1,686 rows and 10 columns, and Global Music should have 101,375 rows and 3 columns.
 
