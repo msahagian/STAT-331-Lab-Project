@@ -1,5 +1,215 @@
 ---
-title: "STAT-331-Lab-Final-Blank"
-format: html
+title: "STAT 331 Final Project: Mystery Concert"
+date: now
+author: "Mia Sahagian, Suhani Kashyap, Hanna Karam"
+format: 
+  html:
+    embed-resources: true
+    code-tools: true
+    toc: true
+editor: source
+execute: 
+  echo: true
+  message: false
+  warning: false
 ---
 
+## Packages
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(gt)
+library(broom)
+library(knitr)
+```
+
+# Mystery Concert
+
+**Background**: A mystery music artist is organizing a concert at Cal Poly. The biggest celebrities in the world are dropping hints on social media about who is behind it. As a journalist at Mustang News, you need to follow the hints across Spotify, Apple Music, and global information to discover the mystery artist and let the students at Cal Poly know who’s performing.
+
+## Data Dictionary & Import
+
+The three CSV files used in this lab were downloaded directly from Kaggle and are linked below. Download the CSV files and save them in your directory.
+
+#### Global Music:
+
+This dataset includes 100,000+ music artists from around the world, recording names, genres (pop, rock, jazz, or classical), profile image (in a link), and location (where the artist is from).
+
+Find more info on the data here: <https://www.kaggle.com/datasets/harshdprajapati/worldwide-music-artists-dataset-with-image>
+
+#### Apple Music:
+
+The dataset includes information on various artists/tracks such as artist name, track name, genre, track duration, and release date, among others.
+
+Find more info on the data here: <https://www.kaggle.com/datasets/kanchana1990/apple-music-dataset-10000-tracks-uncovered>
+
+#### Spotify Music:
+
+The dataset includes information about songs such as artist name, album name and release date, as well as audio features such as tempo, danceability, acousticness, energy, and more.
+
+Find more info on the data here: <https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download>
+
+```{r}
+
+global_music <- read.csv("./Global Music Artists.csv")
+
+apple_music <- read.csv("./apple_music_dataset.csv")
+
+spotify_music <- read.csv("./high_popularity_spotify_data.csv")
+
+#if you saved the data differently, edit the file path
+```
+
+## Data Cleaning
+
+Before you can discover the mystery artist playing at Cal Poly, you need to clean up the data that you're looking at. The students at Cal Poly are counting on you!
+
+### 1. Clean the Apple Music Data
+
+Make a dataset called `apple_clean` and keep only the variables needed for the investigation: `artistName`, `trackName`, `primaryGenreName`, `releaseDate`, and `trackTimeMillis` . There should be no columns related to censorship, explicitness, and price. Rename these variables if necessary. Edit the `releaseDate` column so it has the date in year-month-day, hours-min-second format; extract the release year from the date, and make the track time be in minutes.
+
+```{r}
+# Q1 Code
+
+```
+
+### 2. Clean the Spotify Music Data
+
+Make the dataset `spotify_clean` and keep only variables related to artist identity, popularity, release date, and audio features. Keep only variables `track_name`, `track_artist`, `track_popularity`, `track_album_name`, `track_album_release_date`, `playlist_genre`, `danceability`, `energy`, `tempo`, and `acousticness`. Create a new column called `release_year` that has the year the track was released. Don't include `track_album_release_date`, just use it to create `release_year`.
+
+::: {.callout-note style="color: green"}
+## Hint!
+
+Look into parse_date_time() !
+
+<https://www.rdocumentation.org/packages/lubridate/versions/1.9.5/topics/parse_date_time>
+:::
+
+```{r}
+# Q2 Code
+
+```
+
+### 3. Clean the Global Music data
+
+Make the dataset `global_clean` and keep only `artist_name`, `country`, and `genre`.
+
+```{r}
+# Q3 Code
+
+```
+
+#### Check in: Check sizes
+
+After cleaning:
+
+-   `apple_clean`: each row represents one Apple Music track, with artist, track, genre, release date, release year, time, and duration.
+-   `spotify_clean`: each row represents one Spotify track, with artist, popularity, album, release year, genre, and audio features.
+-   `global_clean`: each row represents one global music artist, including artist name, country, and genre.
+
+Before continuing, confirm that your clean data matches the expected dataset sizes. Complete the code below by filling in the missing expressions so that the resulting table displays the number of rows and columns in each cleaned dataset.
+
+If your cleaning was successful, Apple Music should have 10,000 rows and 7 columns, Spotify Music should have 1,686 rows and 10 columns, and Global Music should have 101,375 rows and 3 columns.
+
+```{r}
+#fill in the blanks
+kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
+             rows = c(_____, _____, _____),
+             columns = c(_____, _____, _____)),
+      caption = 'Verified clean dataset dimensions')
+```
+
+## Follow the clues!
+
+### Clue 1: Most common music genre plot
+
+Congrats on finishing the first step and cleaning up the data! You feel a bit hopeless because you don't have any clues, but then, your friend alerts you that Doja Cat just posted a TikTok about the Cal Poly concert, saying that "The mystery artist is definitely from the most common genre".
+
+Your job now is to find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
+
+```{r}
+# Clue 1 Code
+
+```
+
+### Clue 2: Promo song length
+
+Hurrah! You're one step closer to finding the mystery artist. There are some talks of there being a certain song that is being used as a promo track, and as a data-driven Mustang News journalist, you know that narrowing down that promo track will help you narrow down the mystery headliner. Justin Bieber accidentally leaks on his Instagram Live that “The song is around four minutes long".
+
+Write a function to classify song length that takes a song duration in minutes as input and outputs if a song is too short, a possible match, or too long. Possible matches will be between 3.5 and 4.5 minutes. Make a new dataset containing all possibilities from apple music (remember to use your genre from the previous clue).
+
+::: {.callout-note style="color: green"}
+## Hint!
+
+Use the case_when() function here to stay tidy ;)
+:::
+
+```{r}
+# Clue 2 Code
+
+```
+
+### Clue 3: Promo song filter
+
+Bad Bunny tweets, "The headlining song at the Cal Poly concert is stuck in my head. It's got a nice groove; it's not too energetic, but it's still dance-worthy."
+
+The hit song played by the mystery artist has medium energy (45%–65%) and medium-high danceability (60%–75%).
+
+Write a data frame function that:
+
+-   takes a data frame, a variable name, a minimum value, and a maximum value,
+
+-   and returns only the rows where the chosen variable falls between the minimum and maximum values (inclusive).
+
+Use your function twice to create a new data frame called `spotify_artists` containing songs with: `energy` between 0.45 and 0.65, and `danceability` between 0.60 and 0.75. Display the first rows of `spotify_artists` using kable().
+
+```{r}
+# Clue 3 Code
+
+```
+
+### Clue 4: Combine Datasets
+
+Since such huge names are talking about this mystery artist, you know that the artist has songs on both Apple Music and Spotify. Remove duplicate songs from both `apple_artists` and `spotify_artists`, then create a combined dataset called `final_artists` containing only songs that appear in both datasets.
+
+::: {.callout-note style="color: green"}
+## Hint!
+
+Try using distinct() to remove any duplicates of songs!
+:::
+
+```{r}
+# Clue 4 Code
+
+```
+
+### Clue 5: Predict Popularity
+
+TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Using the final_artists data set which you created in Clue 4, fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. You'll need to create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
+
+```{r}
+# Clue 5 Code
+
+```
+
+### Clue 6: International Time Travel
+
+A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the United States. You notice that most of these hints are posted when the UK is up and at 'em.
+
+Then, Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days." The promo song is one of the best songs from the 2010s.
+
+Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom. Further narrow the results to songs released during the 2010s. Complete the final filter based on these clues, and display your results using the `gt()` function.
+
+```{r}
+# Clue 6 Code
+
+```
+
+::: callout-note
+## Result
+
+After following all six clues and combining evidence from Apple Music, Spotify, and Global Music data, the artist and their headlining song is ... One Direction headlining with Night Changes!!
+
+You can now write your front page Mustang News article!
+:::

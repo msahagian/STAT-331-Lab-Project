@@ -46,7 +46,7 @@ Find more info on the data here: <https://www.kaggle.com/datasets/kanchana1990/a
 
 #### Spotify Music:
 
-The dataset includes information about songs such as artist name, album name and release date, as well as audio features such as tempo, danceability, acoustiness, energy, and more.
+The dataset includes information about songs such as artist name, album name and release date, as well as audio features such as tempo, danceability, acousticness, energy, and more.
 
 Find more info on the data here: <https://www.kaggle.com/datasets/solomonameh/spotify-music-dataset?resource=download>
 
@@ -70,6 +70,7 @@ Before you can discover the mystery artist playing at Cal Poly, you need to clea
 Make a dataset called `apple_clean` and keep only the variables needed for the investigation: `artistName`, `trackName`, `primaryGenreName`, `releaseDate`, and `trackTimeMillis` . There should be no columns related to censorship, explicitness, and price. Rename these variables if necessary. Edit the `releaseDate` column so it has the date in year-month-day, hours-min-second format; extract the release year from the date, and make the track time be in minutes.
 
 ```{r}
+# Q1 Code
 apple_clean <- apple_music |>
  select(artist_name = artistName,
         track_name = trackName,
@@ -92,6 +93,7 @@ Look into parse_date_time() !
 :::
 
 ```{r}
+# Q2 Code
 spotify_clean <- spotify_music |>
  select(track_name,
         track_artist,
@@ -115,6 +117,7 @@ spotify_clean <- spotify_music |>
 Make the dataset `global_clean` and keep only `artist_name`, `country`, and `genre`.
 
 ```{r}
+# Q3 Code
 global_clean <- global_music |>
  select(artist_name,
         country,
@@ -129,7 +132,9 @@ After cleaning:
 -   `spotify_clean`: each row represents one Spotify track, with artist, popularity, album, release year, genre, and audio features.
 -   `global_clean`: each row represents one global music artist, including artist name, country, and genre.
 
-Apple Music should be 10000 rows by 7 columns, Spotify Music should be 1686 rows by 10 columns, and Global Music should be 101375 rows by 3 columns.
+Before continuing, confirm that your clean data matches the expected dataset sizes. Complete the code below by filling in the missing expressions so that the resulting table displays the number of rows and columns in each cleaned dataset.
+
+If your cleaning was successful, Apple Music should have 10,000 rows and 7 columns, Spotify Music should have 1,686 rows and 10 columns, and Global Music should have 101,375 rows and 3 columns.
 
 ```{r}
 kable(tibble(dataset = c("Apple Music", "Spotify Music", "Global Music"),
@@ -149,6 +154,7 @@ Congrats on finishing the first step and cleaning up the data! You feel a bit ho
 Your job now is to find the most common genres in the Apple Music data by creating a plot and sorting the top 10 genres from least common to most common. Which genre is most common?
 
 ```{r}
+# Clue 1 Code
 apple_clean |>
  count(genre, sort = TRUE) |>
  slice_max(n, n = 10) |>
@@ -177,6 +183,7 @@ Use the case_when() function here to stay tidy ;)
 :::
 
 ```{r}
+# Clue 2 Code
 song_length <- function(minutes) {
   case_when(minutes < 3.5 ~ "Too short",
             minutes <= 4.5 ~ "Possible match",
@@ -206,6 +213,7 @@ Write a data frame function that:
 Use your function twice to create a new data frame called `spotify_artists` containing songs with: `energy` between 0.45 and 0.65, and `danceability` between 0.60 and 0.75. Display the first rows of `spotify_artists` using kable().
 
 ```{r}
+# Clue 3 Code
 between_filter <- function(df, var, min, max) {
   
   df |>
@@ -233,6 +241,7 @@ Try using distinct() to remove any duplicates of songs!
 :::
 
 ```{r}
+# Clue 4 Code
 spotify_artists <- spotify_artists |>
   distinct(track_name, track_artist, .keep_all = TRUE)
 
@@ -251,6 +260,7 @@ final_artists <- spotify_artists |>
 TMZ leaks that the promo song is a massive hit. However, insiders claim that the song is more popular than you would expect based on its audio characteristics alone. Using the final_artists data set which you created in Clue 4, fit a linear regression model called `popularity_model` that predicts `track_popularity` using: `danceability`, `energy`, `tempo`, `acousticness`. Use `augment()` to add the model's predicted popularity values to `final_artists`. You'll need to create a new variable called `popularity_difference` that measures how much more popular a song is than expected. Keep only the three songs with the largest positive popularity difference. Display the resulting data frame using `kable()`.
 
 ```{r}
+# Clue 5 Code
 popularity_model <- lm(track_popularity ~ danceability + 
                          energy + tempo + acousticness,
                        data = final_artists)
@@ -269,11 +279,12 @@ final_artists |>
 
 A fan notices that all of these hints were posted at some strange times in Pacific Time. You suspect that the mystery artist is actually NOT from the United States. You notice that most of these hints are posted when the UK is up and at 'em.
 
-Then, Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days. The promo song is one of the best songs from the 2010s.
+Then, Drake tweets "Yoo, this Cal Poly headliner got me mad nostalgic, reminds me of my 'Kiki do you love me' days." The promo song is one of the best songs from the 2010s.
 
 Join the remaining potential artists to the global artist data and filter for artists from the United Kingdom. Further narrow the results to songs released during the 2010s. Complete the final filter based on these clues, and display your results using the `gt()` function.
 
 ```{r}
+# Clue 6 Code
 final_artists <- final_artists |>
   left_join(global_clean,
             by = join_by(track_artist == artist_name)) |>
